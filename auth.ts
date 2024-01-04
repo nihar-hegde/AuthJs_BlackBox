@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 export const {
   handlers: { GET, POST },
   auth,
+  signIn,
+  signOut,
 } = NextAuth({
   // spread auth config because this file will contain the prsimaAdapter and it doese not support edge
   adapter: PrismaAdapter(db),
