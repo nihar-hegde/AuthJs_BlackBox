@@ -6,6 +6,8 @@ import { LoginSchema } from "@/schemas";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
+import { generateVerificationToken } from "@/lib/tokens";
+import { getUserByEmail } from "@/data/user";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   // validating schema
@@ -15,6 +17,24 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     return { error: "Invalid fields!" };
   }
   const { email, password } = validatedFields.data;
+
+  // NOTE: try to fetch the existing user
+
+  const existingUser = await getUserByEmail(email);
+
+  // check if the user exists or not if There is no password then they should be loggin in with their oAuth
+  if (!existingUser || !existingUser.email || !existingUser.password) {
+    return { error: "Invalid Credentials!" };
+  }
+
+  // NOTE: if existingUser email is not verified then generate a new token
+
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(
+      existingUser.email,
+    );
+    return { success: "Confirmation email sent!" };
+  }
 
   try {
     await signIn("credentials", {

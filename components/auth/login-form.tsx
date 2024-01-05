@@ -48,8 +48,7 @@ export const LoginForm = () => {
     startTransition(() => {
       login(values).then((data) => {
         setError(data?.error);
-        // TODO: Add when we add todo
-        // setSuccess(data?.success);
+        setSuccess(data?.success);
       });
     });
   };

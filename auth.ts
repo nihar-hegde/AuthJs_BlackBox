@@ -35,13 +35,18 @@ export const {
   callbacks: {
     // NOTE: what this does is that if the user is logged in but not verified then it will not allow to login.
 
-    // async signIn({ user }) {
-    //   const existingUser = await getUserByid(user.id);
-    //   if (!existingUser || !existingUser.emailVerified) {
-    //     return false;
-    //   }
-    //   return true;
-    // },
+    async signIn({ user, account }) {
+      // allow oAuth wihtout email verification
+      if (account?.provider !== "credentials") return true;
+
+      const existingUser = await getUserByid(user.id);
+
+      // don't allow to login if email is not verified
+      if (!existingUser?.emailVerified) return false;
+
+      // TODO:Add 2fa check
+      return true;
+    },
 
     async session({ token, session }) {
       console.log({ sessionToken: token });
