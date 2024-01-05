@@ -15,6 +15,11 @@ export const {
   // spread auth config because this file will contain the prsimaAdapter and it doese not support edge
 
   // NOTE: This event is to prepopulate the verifiedEmail field in db if user loggs in using oAuth.
+
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
   events: {
     async linkAccount({ user }) {
       await db.user.update({
