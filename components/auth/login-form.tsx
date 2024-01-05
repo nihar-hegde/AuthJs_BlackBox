@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { LoginSchema } from "@/schemas";
+import { useSearchParams } from "next/navigation";
 
 import { CardWrapper } from "./card-wrapper";
 import { Input } from "../ui/input";
@@ -23,6 +24,12 @@ import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 
 export const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use please try with a different account or provider!"
+      : "";
+
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -40,8 +47,9 @@ export const LoginForm = () => {
 
     startTransition(() => {
       login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        setError(data?.error);
+        // TODO: Add when we add todo
+        // setSuccess(data?.success);
       });
     });
   };
@@ -93,7 +101,7 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <FormError message={error} />
+          <FormError message={error || urlError} />
           <FormSuccess message={success} />
           <Button disabled={isPending} className="w-full" type="submit">
             LogIn
