@@ -1,14 +1,23 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { settings } from "@/actions/settings";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useState, useTransition } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTransition, useState } from "react";
+import { useSession } from "next-auth/react";
+
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SettingsSchema } from "@/schemas";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { settings } from "@/actions/settings";
 import {
   Form,
   FormField,
@@ -22,22 +31,15 @@ import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-} from "@/components/ui/select";
 import { UserRole } from "@prisma/client";
-import { Switch } from "@/components/ui/switch";
 
 const SettingsPage = () => {
   const user = useCurrentUser();
-  const { update } = useSession();
-  const [isPending, startTransition] = useTransition();
+
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+  const { update } = useSession();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
@@ -58,23 +60,25 @@ const SettingsPage = () => {
           if (data.error) {
             setError(data.error);
           }
+
           if (data.success) {
             update();
             setSuccess(data.success);
           }
         })
-        .catch(() => setError("Something went Wrong!"));
+        .catch(() => setError("Something went wrong!"));
     });
   };
+
   return (
     <Card className="w-[600px]">
       <CardHeader>
-        <p className="text-2xl font-semibold">⚙️ Settings</p>
+        <p className="text-2xl font-semibold text-center">⚙️ Settings</p>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <div space-y-4>
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -94,7 +98,6 @@ const SettingsPage = () => {
               />
               {user?.isOAuth === false && (
                 <>
-                  {" "}
                   <FormField
                     control={form.control}
                     name="email"
@@ -104,12 +107,11 @@ const SettingsPage = () => {
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="john.doe@email.com"
+                            placeholder="john.doe@example.com"
                             type="email"
                             disabled={isPending}
                           />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -128,7 +130,6 @@ const SettingsPage = () => {
                             disabled={isPending}
                           />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -166,7 +167,7 @@ const SettingsPage = () => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a Role" />
+                          <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -187,7 +188,7 @@ const SettingsPage = () => {
                       <div className="space-y-0.5">
                         <FormLabel>Two Factor Authentication</FormLabel>
                         <FormDescription>
-                          Enable TWO Factor Authentication for your Account
+                          Enable two factor authentication for your account
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -197,7 +198,6 @@ const SettingsPage = () => {
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -205,7 +205,7 @@ const SettingsPage = () => {
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button type="submit" disabled={isPending}>
+            <Button disabled={isPending} type="submit">
               Save
             </Button>
           </form>
