@@ -13,6 +13,7 @@ export const {
   auth,
   signIn,
   signOut,
+  update,
 } = NextAuth({
   // spread auth config because this file will contain the prsimaAdapter and it doese not support edge
 
@@ -93,7 +94,7 @@ export const {
 
       const existingAccount = await getAccountByUserId(existingUser.id);
 
-      token.isOauth = !!existingAccount;
+      token.isOAuth = !!existingAccount;
       token.name = existingUser.name;
       token.email = existingUser.email;
       // assign the role to the token
